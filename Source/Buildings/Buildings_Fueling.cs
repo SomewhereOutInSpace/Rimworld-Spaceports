@@ -71,23 +71,17 @@ namespace Spaceports.Buildings
 
         public void RareTick()
         {
-            CompRefuelable FuelComp = this.GetComp<CompRefuelable>();
-            if(FuelComp != null)
-            {
-                if (FuelComp.HasFuel && this.GetComp<CompPowerTrader>().PowerOn && !GetLinkedTanks().NullOrEmpty() && CanAnyTankAcceptFuelNow())
+            if (this.GetComp<CompPowerTrader>().PowerOn) {
+                CompRefuelable FuelComp = this.GetComp<CompRefuelable>();
+                if (FuelComp != null && FuelComp.HasFuel)
                 {
                     int UPRT = UnitsPerRareTick; //Cache value from getter to avoid excessive calls to reflected DBH methods
                     TotalProduced += UPRT;
-                    TryDistributeFuel(UPRT);
+                    ProductionCache += UPRT;
                 }
-                else if(GetLinkedTanks().NullOrEmpty() || !CanAnyTankAcceptFuelNow())
+                if (!GetLinkedTanks().NullOrEmpty() && CanAnyTankAcceptFuelNow()) 
                 {
-                    if(FuelComp.HasFuel && this.GetComp<CompPowerTrader>().PowerOn)
-                    {
-                        int UPRT = UnitsPerRareTick; //Cache value from getter to avoid excessive calls to reflected DBH methods
-                        TotalProduced += UPRT;
-                        ProductionCache += UPRT;
-                    }
+                    TryDistributeFuel(0);
                 }
             }
         }
